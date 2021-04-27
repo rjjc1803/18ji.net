@@ -1,0 +1,130 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+    <style>
+        #main {
+            width: 65%;
+            height: 100%;
+            margin-top: 40px;
+            margin-left: 150px;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="headTable" class="layui-collapse" lay-accordion="">
+          </div>
+        <div id="NoClass" style="display:none">
+            <h3>您尚未加入班级，请先加入班级</h3><a href="/Class/JionClass">加入班级</a>
+        </div>
+     </div>
+
+    <script>
+
+        $(function () {
+            GetClassName();
+            BindEvent();
+        })
+
+        layui.use(['jquery', 'table', 'form'], function () {
+                initTable(); // 渲染表格
+                into();
+        });
+
+        function GetClassName() {
+            var url = '/Class/GetClassById',
+                classid=@ViewBag.CurClassID;
+            $.post(url,{id:classid}, function (resp) {
+                if (resp.ClassID==0) {
+                    $('#NoClass').show()
+                    return;
+                }
+                insert2TableDiv(resp);
+            });
+        }
+
+        function insert2TableDiv(t) {
+
+            var trHtml =`<div class="layui-colla-item">
+            <h2 class="layui-colla-title"><b>班级名称：</b><span><b style="margin-right:80px">${t.Name}</b></span><b>编号：${t.ClassID}</b><a id="${t.ClassID}" href="#" style="margin-left:350px">退出班级</a></h2><div class="layui-colla-content layui-show">
+                <div id="Class">
+                    <table class="layui-hide" id="tt1" lay-filter="tt1"></table> </div> </div></div>`
+            $('#headTable').append(trHtml);
+
+        }
+
+
+        function BindEvent() {
+            $("#@ViewBag.CurClassID").on('click', UpadteClassId);
+            //$("a[name='${t.ClassID}']").on('click', UpadteClassId);
+        }
+
+        function UpadteClassId() {
+            var url = '/Class/UpadteClass',
+                ClassId=@ViewBag.CurUserID;
+            $.post(url,{id:ClassId}, function (resp) {
+                layui.layer.msg('退出班级成功！');
+                isClass=false;
+            });
+
+        }
+
+        function into() {
+            layui.use(['element', 'layer'], function () {
+                var element = layui.element;
+                var layer = layui.layer;
+                //监听折叠
+                element.on('collapse(test)', function (data) {
+                    layer.msg('展开状态：' + data.show);
+                });
+            });
+        }
+        // 初始化表格
+        function initTable() {
+            layui.table.render({
+                elem: '#tt1'// 渲染表格的【lay-filter】
+                , url: '/Class/GetListByPage?classid= @ViewBag.CurClassID' //请求数据的url
+                , request: {// 请求附加参数，修改默认分页传参key的名称
+                    pageName: 'pageindex'
+                    , limitName: 'pagesize'
+                }
+                , method: 'post'
+                , title: '班级花名册'
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'WorkID', title: '学号', width: 150, sort: true }
+                    , { field: 'Name', title: '姓名', width: 120 }
+                    , { field: 'Gender', title: '性别', width: 80}
+                    , { field: 'EMail', title: '邮箱', width: 200}
+                    , { field: 'SchName', title: '学校', width: 200}
+                ]]
+                , page: true// 开启分页
+                , parseData: function (res) {// 对后端响应数据做进一步处理
+                    return {
+                        "code": 0// 返回成功有效code为0
+                        , "count": res.Total
+                        , "data": res.Rows
+                    };
+                }
+            });
+        }
+
+
+    </script>
+</body>
+</html>
+
+

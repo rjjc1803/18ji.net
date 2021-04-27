@@ -1,0 +1,17 @@
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\LoveExam.DAL.dll.config
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\LoveExam.DAL.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\LoveExam.DAL.pdb
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\EntityFramework.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\EntityFramework.SqlServer.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\LoveExam.Model.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\LoveExam.Model.pdb
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\LoveExam.Model.dll.config
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\EntityFramework.xml
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\EntityFramework.SqlServer.xml
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\zh-Hans\EntityFramework.resources.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\bin\Debug\zh-Hans\EntityFramework.SqlServer.resources.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\obj\Debug\LoveExam.DAL.csprojAssemblyReference.cache
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\obj\Debug\LoveExam.DAL.csproj.CoreCompileInputs.cache
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\obj\Debug\LoveExam.DAL.csproj.CopyComplete
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\obj\Debug\LoveExam.DAL.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.DAL\obj\Debug\LoveExam.DAL.pdb

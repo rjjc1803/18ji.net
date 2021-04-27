@@ -1,0 +1,115 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+
+    <style>
+        #main {
+            width: 45%;
+            height: 100%;
+            margin-top: 100px;
+            margin-left: 25%;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+
+        label {
+            zoom: 130%;
+            color: #C4A699;
+        }
+
+        .layui-input {
+            width: 50%;
+        }
+
+        #tipMsg {
+            color: red;
+            font-size: 20px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div id="main">
+        <form class="form-group">
+
+            <div class="form-group">
+                <label id="WorkID" style="margin-right:20px;">原密码：</label>
+                <input type="password" id="OldPwd" lay-verify="required"  placeholder="原密码" autocomplete="off" class="layui-input">
+            </div>
+            <div class="form-group">
+                <label style="margin-right:20px;">新密码：</label>
+                <input type="password" id="NewPwd" lay-verify="required" placeholder="输入密码" autocomplete="off" class="layui-input">
+            </div>
+            <div class="form-group">
+                <label>确认新密码：</label>
+                <input type="password" id="RePwd" lay-verify="required" placeholder="确认新密码" autocomplete="off" class="layui-input">
+            </div>
+            <div class="form-group">
+                <span id="tipMsg"></span>
+            </div>
+            <div id="" class="form-group">
+                <button id="Update" style="margin-left:10%;margin-top:30px;" type="button" class="layui-btn layui-btn-primary layui-btn-radius">保存</button>
+            </div>
+        </form>
+
+
+    </div>
+
+    <script>
+
+        $(function () {
+            bindEvent();;
+        });
+
+        function bindEvent() {
+            $('#Update').on('click', UpdateById);
+        }
+
+
+        function UpdateById() {
+
+            $('#tipMsg').html('');
+            var url = '/Security/UpdatePwdById';
+            var UserID=@ViewBag.CurUserID,
+                OldPwd=$('#OldPwd').val(),
+                NewPwd= $('#NewPwd').val(),
+                RePwd=$('#RePwd').val();
+
+            if (NewPwd == '' || RePwd == '') {
+                $('#tipMsg').html('密码不允许为空！');
+                return;
+            }
+            if (NewPwd != RePwd) {
+                $('#tipMsg').html('两次密码输入不一致请重新输入！');
+                return;
+            }
+            function Update(resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    alert('修改密码成功！');
+                    OldPwd=$('#OldPwd').val('');
+                    NewPwd= $('#NewPwd').val('');
+                    RePwd=$('#RePwd').val('');
+                } else {
+                    $('#tipMsg').html(obj.Message);
+                }
+            };
+
+            $.post(url,{uid:UserID,pwd:OldPwd,rpwd:NewPwd },Update);
+        }
+    </script>
+</body>
+</html>

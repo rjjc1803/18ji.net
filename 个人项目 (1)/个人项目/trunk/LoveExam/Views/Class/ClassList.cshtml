@@ -1,0 +1,224 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />    
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+    <style>
+
+        #main {
+            width: 70%;
+            height: 100%;
+            margin-top: 50px;
+            margin-left:150px;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+
+    <div id="headTable" class="layui-collapse" lay-accordion="">
+        <div class="layui-colla-item" style="display:none">
+            <div class="layui-colla-content layui-show">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDelete">批量删除</button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-xs" lay-event="View">查看</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </script>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <script>
+
+        var list=new Array();
+        var ClassList=new Array();
+       
+        $(function () {
+            loadData();
+        })
+
+     function loadData() {
+            $.post('/Class/GetClassList',{TeaID: @ViewBag.CurUserID},
+                function (resp) {
+                    resp.forEach(function (t,i) {
+                        insert2TableDiv(t,i);//添加手风琴班级列表
+                        list[i]="#"+t.ClassID;
+                        ClassList[i]=t.ClassID;                   
+                    });
+                });
+        }
+
+        function insert2TableDiv(t,i) {
+  
+            var trHtml =`<div class="layui-colla-item">
+            <h2 class="layui-colla-title"><b style="margin-right:80px">${t.Name}</b><b>编号:${t.ClassID}</b><a name="Delete" href="#" style="margin-left:400px" value="${t.ClassID}">解散班级</a></h2>
+            <div class="layui-colla-content layui-show">
+                <div id="Class">
+                    <table class="layui-hide" id="${t.ClassID}" lay-filter="test"></table> </div> </div></div>`
+            $('#headTable').append(trHtml);
+
+            $("a[name='Delete']").on('click',DeleteClassById);
+        }
+
+        function DeleteClassById(e) { 
+            var ClassID=$(e.target).attr('value');
+            var url = '/Class/DeleteClassById';
+            function Del(resp) {
+                if (resp.Status) {
+                    layui.layer.msg('班级删除成功，刷新页面即可生效！');
+                } else {
+                    layui.layer.msg('班级删除失败，请重新删除！');
+                }
+            };
+            $.post(url, {id:ClassID}, Del);
+            
+        }
+
+        //手风琴
+        function into() {
+            layui.use(['element', 'layer'], function(){
+                var element = layui.element;
+                var layer = layui.layer;
+                //监听折叠
+                element.on('collapse(test)', function(data){
+                    layer.msg('展开状态：'+ data.show);
+                });
+            });
+
+        }
+
+        layui.use(['jquery', 'table', 'form'], function () {
+            into();
+            initTable(); // 渲染表格
+            initTableToolbar(); // 渲染表头工具栏（批量删除、导出等等）
+            initTableInlineTool();// 表格行内编辑操作（编辑、删除、审核。。。）
+        });
+
+        // 初始化表格
+        function initTable() {
+            for (var i = 0; i < ClassList.length; i++) {
+                layui.table.render({
+                    elem: list[i]// 渲染表格的【lay-filter】
+                , url: `/Class/GetListByPage?classid=${ClassList[i]}` //请求数据的url
+                , request: {// 请求附加参数，修改默认分页传参key的名称
+                    pageName: 'pageindex'
+                    , limitName: 'pagesize'
+                }
+                , method: 'post'
+                , title: '学生列表'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'WorkID', title: '学号', width: 120, fixed: 'left', sort: true }
+                    , { field: 'Name', title: '姓名', width: 120, edit: 'text' }
+                    , { field: 'Gender', title: '性别', width: 80, edit: 'text' }
+                    , {field: 'EMail', title: '邮箱', width: 200, edit: 'text' }
+                    , {field: 'SchName', title: '学校（单位）', width: 150, edit: 'text' }
+                    , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150 }
+                    ]]
+                , page: true// 开启分页
+                , parseData: function (res) {// 对后端响应数据做进一步处理
+                    return {
+                        "code": 0// 返回成功有效code为0
+                        , "count": res.Total
+                        , "data": res.Rows
+                    };
+                }
+            });
+
+            }
+        }
+
+    // 行内编辑事件
+    function initTableInlineTool() {
+        layui.table.on('tool(test)', function (obj) {
+            // 当前行数据，包括没有绑定表格显示的属性
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    var url = '/Home/UpdateClassId';
+                    var uid=data.UserID,
+                        cid=0;
+                    $.post(url,{userid:uid,classid:cid}, function (resp) {
+                        var ro = resp;
+                        if (ro.Status) {
+                            obj.del();// 仅仅在表格内移除行数据，不会重新请求数据                            
+                            layer.close(index);
+                        } else {
+                            layer.msg('无法删除，请联系管理员！');
+                        }
+                    });
+                });
+            } else if (obj.event === 'View') {
+                StudentView(data);
+            }
+        });
+    }
+
+    // 表头工具栏
+    function initTableToolbar() {
+        layui.table.on('toolbar(test)', function (obj) {
+            // obj.config.id 即渲染表格的【lay-filter】，checkStatus获取选中行相关数据
+            var checkStatus = layui.table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'batchDelete':
+                    if (checkStatus.data.length == 0) {
+                        layui.layer.msg('请选中数据后进行删除！');
+                    } else {
+                        var prodName = checkStatus.data.map(function (t, i) {
+                            return t.Name;
+                        });
+                        var  Array = checkStatus.data.map(function (t, i) {
+                            return t.UserID;
+                        });
+
+                        layer.confirm(`确认删除姓名为${prodName}的学生?`, function (e) {
+                            deleteByBatch(Array);
+                        });
+                    }
+                    break;
+            };
+        });
+    }
+
+    function deleteByBatch(arr) {
+        var url = '/Home/BatchUpdate';
+        $.post(url, { ids: arr.join() }, function (resp) {
+            var obj = resp;
+            if (obj.Status) {
+                layui.layer.msg('批量删除成功！');
+                loadData();
+            } else {
+                layui.layer.msg('发生异常，无法进行批量删除');
+                console.error(resp.Message);
+            }
+        });
+    }
+
+    function StudentView(prod) {
+        //TODO
+        //查看成绩
+    }
+</script>
+
+</body>
+</html>
+
+

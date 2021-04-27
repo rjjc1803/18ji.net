@@ -1,0 +1,340 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+    <style>
+        #main {
+            width: 70%;
+            height: 100%;
+            margin-top: 50px;
+            margin-left: 150px;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+        #SeClass {
+            /*display:none;*/
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="headTable" class="layui-collapse" lay-accordion="">
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title"><b>试卷列表</b></h2>
+                <div class="layui-colla-content layui-show">
+                    <table class="layui-hide" id="test" lay-filter="test"></table>
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDelete">批量删除</button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+                        <a id="Rele" class="layui-btn layui-btn-warm layui-btn-xs" lay-event="rele">发布</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var html = `<label style="zoom:90%;">选择班级：</label>`;
+        var list = new Array();
+        $(function () {
+            GetClassList();
+        });
+        function GetClassList() {
+            var TID = @ViewBag.CurUserID;
+            //var TID = 54325;
+            var url = '/Class/GetClassList';
+            function Get(resp) {
+
+                if (resp != null) {
+                    resp.forEach(function (t, i) {
+                        html += Gethtml(t);
+                        list[i] = t.ClassID;
+                    });
+                }
+                else {
+                    layui.layer.msg('获取班级失败，请刷新重试！');
+                }
+            };
+            $.post(url, { TeaID: TID }, Get);
+        }
+
+        function Gethtml(t) {
+            tr = `<div class="form-check form-check-inline" style="zoom:90%;">
+        <input class="form-check-input" type="checkbox" name="Class" id="Student" value="${t.ClassID}">
+        <label class="form-check-label" for="Student">${t.Name}</label>
+    </div>`;
+            return tr;
+        }
+        function SetClass() {
+            layui.use('layer', function () {
+                var $ = layui.jquery, layer = layui.layer;
+                //触发事件
+                var active = {
+                    offset: function (othis) {
+                        var type = othis.data('type')
+                        , text = othis.text();
+
+                        layer.open({
+                            type: 1
+                          , offset: type
+                          , id: 'layerDemo' + type //防止重复弹出
+                          , content: html
+                          , btn: '确认'
+                          , btnAlign: 'c' //按钮居中
+                          , shade: 0 //不显示遮罩
+                          , yes: function () {
+                              layer.closeAll();//触发事件
+                          }
+                        });
+                    }
+                };
+
+                $('#layui-btn.layui-btn-warm.layui-btn-xs').on('click', set);
+                function set() {
+                    var othis = $(this), method = othis.data('method');
+                    active[method] ? active[method].call(this, othis) : '';
+                }
+
+            });
+        }
+
+        layui.use(['jquery', 'table', 'form','layer'], function () {
+
+            into();
+            initTable(); // 渲染表格
+            initTableToolbar(); // 渲染表头工具栏（批量删除、导出等等）
+            initTableInlineTool();// 表格行内编辑操作（编辑、删除、审核。。。）
+           
+        });
+
+
+        function into() {
+            layui.use(['element', 'layer'], function () {
+                var element = layui.element;
+                var layer = layui.layer;
+                //监听折叠
+                element.on('collapse(test)', function (data) {
+                    layer.msg('展开状态：' + data.show);
+                });
+            });
+        }
+
+        // 初始化表格
+         function initTable() {
+            layui.table.render({
+                elem: '#test'// 渲染表格的【lay-filter】
+                , url: '/TPaper/GetTestList?id=@ViewBag.CurUserID' //请求数据的url
+                , request: {// 请求附加参数，修改默认分页传参key的名称
+                    pageName: 'pageindex'
+                    , limitName: 'pagesize'
+                }
+                , method: 'post'
+                , title: '试卷列表'
+                , toolbar: '#toolbarDemo'
+                , cols: [[
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: 'TestID', title: '编号', width: 80, sort: true }
+                    , { field: 'Name', title: '名称', width: 180 }
+                    , { field: 'ObjNumber', title: '客观题总分', width: 100 }
+                    , { field: 'SubNumber', title: '主观题总分', width: 100 }
+                    , { field: 'Score', title: '总分', width: 60 }
+                    , { field: 'TestStatus', title: '状态', width: 130 }
+                    , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 180 }
+                ]]
+                , page: true// 开启分页
+                , parseData: function (res) {// 对后端响应数据做进一步处理
+                    return {
+                        "code": 0// 返回成功有效code为0
+                        , "count": res.Total
+                        , "data": res.Rows
+                    };
+                }
+            });
+        }
+
+        // 行内编辑事件
+        function initTableInlineTool() {
+            layui.table.on('tool(test)', function (obj) {
+                // 当前行数据，包括没有绑定表格显示的属性
+                var data = obj.data;
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除行么', function (index) {
+                        var url = '/TPaper/DeleteTestById';
+                        var TestID = data.TestID;
+                        $.post(url, { id: TestID }, function (resp) {
+                            var ro = resp;
+                            if (ro.Status) {
+                                obj.del();// 仅仅在表格内移除行数据，不会重新请求数据                            
+                                layer.close(index);
+                            } else {
+                                layer.msg('无法删除，请联系管理员！');
+                            }
+                        });
+                        var URL = '/Warehouse/DeleteExamById';
+                        $.post(URL, { id: TestID }, function (resp) {
+                            if (resp.Status) {
+                                layer.msg('试卷删除成功！');
+                            } else {
+                                layer.msg('无法删除，请联系管理员！');
+                            }
+                        });
+
+                    });
+                } else if (obj.event === 'edit') {
+                    EditTest(data);
+                }
+                else if (obj.event === 'rele') {
+                    var isSet = $('#Rele').html();
+                    if (isSet=="发布") {
+                        ReleTest(data);
+                    }
+                    else{
+                        ReSet(data);
+                    }
+                    
+                }
+            });
+        }
+
+        // 表头工具栏
+        function initTableToolbar() {
+            layui.table.on('toolbar(test)', function (obj) {
+                // obj.config.id 即渲染表格的【lay-filter】，checkStatus获取选中行相关数据
+                var checkStatus = layui.table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'batchDelete':
+                        if (checkStatus.data.length == 0) {
+                            layui.layer.msg('请选中数据后进行删除！');
+                        } else {
+                            var prodName = checkStatus.data.map(function (t, i) {
+                                return t.Name;
+                            });
+                            var Array = checkStatus.data.map(function (t, i) {
+                                return t.TestID;
+                            });
+
+                            layer.confirm(`确认删除编号为${Array}的试卷?`, function (e) {
+                                deleteByBatch(Array);
+                            });
+                        }
+                        break;
+                };
+            });
+        }
+
+        function deleteByBatch(arr) {
+            var url = '/Warehouse/BatchDeleteTestById';
+            $.post(url, { ids: arr.join() }, function (resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    layui.layer.msg('批量删除成功！');
+                    //loadData();
+                } else {
+                    layui.layer.msg('发生异常，无法进行批量删除');
+                    console.error(resp.Message);
+                }
+            });
+            //TODO
+            //同时删除关联表Exam的多条记录
+        }
+
+        //判断试卷状态
+        function ReleTest(prod) {
+            SetClass();
+            $('#SeClass').show();
+            var url = '/Warehouse/GetTestById'
+            var TestID = prod.TestID;
+                function GetTest(resp) {
+                    if (resp != null) {
+                        if (resp.TestStatus == "已发布") {
+                            ReSet(TestID);                          
+                        } else if (resp.TestStatus == "未发布") {
+                            SetTest(TestID);
+                        }
+                    } else {
+                        layui.layer.msg('发生异常，请联系管理员！');
+                    }
+                };
+                $.post(url, { id:TestID }, GetTest);
+        }
+
+        //获得对应班级学生的编号
+        function SetTest(tid) {
+
+            var url = '/Home/GetUserByClassId';
+            var ClassID = 20015;
+            var TestID = tid;
+            var StuList = new Array();
+            function GetUser(resp) {
+                if (resp != null) {
+                    for (var i = 0; i < resp.length; i++) {
+                        StuList[i] = resp[i].UserID;
+                    }
+                    AddStuTest(StuList, TestID);
+                    ChangeStat(TestID);
+                } else {
+                    layui.layer.msg('发布试卷失败！');
+                }
+            };
+            $.post(url, { id: ClassID }, GetUser);
+        }
+
+        //给关联表StuTest添加记录
+        function AddStuTest(arr, tid) {
+            var url = '/Warehouse/AddStuTest';          
+            var TestID = tid,
+                ClassID = 20015;
+            function add(resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    layui.layer.msg('发布试卷成功！');
+                } else {
+                    layui.layer.msg('发布试卷失败！');
+                }
+            };
+            $.post(url, { tid: TestID, cid: ClassID, uid: arr.join() }, add);
+        }
+
+        function ChangeStat(tid) {
+            var url = '/Warehouse/UpdateStatById'
+            var TestID = tid;
+            function GetTest(resp) {
+                if (resp != null) {
+                    //$("#Rele").html('已发布');
+                } else {
+                    layui.layer.msg('发生异常，请联系管理员！');
+                }
+            };
+            $.post(url, { tid: TestID }, GetTest);
+        }
+
+        //重新发布试卷
+        function ReSet(tid) {
+            layer.confirm('试卷已发布,是否重新发布？', function (index) { });
+        }
+
+        //重新编辑试卷
+        function EditTest(prod) {
+            location.href = `/TPaper/TopicList?id=${prod.TestID}`;
+        }
+
+    </script>
+</body>
+</html>
+
+

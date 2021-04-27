@@ -1,0 +1,181 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+
+    <style>
+        #main {
+            width: 45%;
+            height: 100%;
+            margin-top: 100px;
+            margin-left: 25%;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+
+        label {
+            zoom: 130%;
+            color: #C4A699;
+        }
+
+        .layui-input {
+            display: none;
+            width: 50%;
+        }
+
+        span {
+            zoom: 130%;
+        }
+
+        #radSex {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div id="main">
+        <form class="form-group">
+            <div class="form-group">
+                <label style="color:#C4A699">用户编号:</label>
+                <span id="txtUserID">@ViewBag.CurUserID</span>
+            </div>
+            <div class="form-group">
+                <label id="WorkID" style="margin-right:20px;">学号:</label>
+                <input type="text" id="InStuID" lay-verify="required" value="@ViewBag.CurUserStuID" autocomplete="off" class="layui-input">
+                <span id="txtStuID">@ViewBag.CurUserStuID</span>
+            </div>
+            <div class="form-group">
+                <label style="margin-right:20px;">姓名:</label>
+                <input type="text" id="InName" lay-verify="required" value="@ViewBag.CurUserName " autocomplete="off" class="layui-input">
+                <span id="txtName">@ViewBag.CurUserName</span>
+            </div>
+            <div style="margin:0px 0px 16px;">
+                <label for="txtSex" style="margin-right:20px;">性别：</label>
+                <div id="radSex" style="margin-left:40px;">
+                    <div class="form-check form-check-inline" style="margin-left:20px">
+                        <input class="form-check-input" type="radio" name="Sex" id="Man" value="男" checked="checked">
+                        <label class="form-check-label" for="Student">男</label>
+                    </div>
+                    <div class="form-check form-check-inline" style="margin-left:95px">
+                        <input class="form-check-input" type="radio" name="Sex" id="WoMan" value="女">
+                        <label class="form-check-label" for="Teacher">女</label>
+                    </div>
+                </div>
+                <span id="txtSex">@ViewBag.CurUserSex</span>
+            </div>
+            <div class="form-group">
+                <label>学校名称:</label>
+                <input type="text" id="InSchName" lay-verify="required" value="@ViewBag.CurUserSch " autocomplete="off" class="layui-input">
+                <span id="txtSchName">@ViewBag.CurUserSch</span>
+            </div>
+            <div class="form-group">
+                <label style="margin-right:20px;">Email:</label>
+                <input type="text" id="InEmail" lay-verify="required" value="@ViewBag.CurUserEmail" autocomplete="off" class="layui-input">
+                <span id="txtEmail">@ViewBag.CurUserEmail</span>
+            </div>
+        </form>
+        <div id="" class="form-group">
+            <button id="Update" style="margin-left:10%;margin-top:30px;" type="button" class="layui-btn layui-btn-primary layui-btn-radius">修改</button>
+        </div>
+
+    </div>
+
+    <script>
+
+        $(function () {
+
+            if (@ViewBag.CurUserPro==202) {
+                $('#WorkID').html('工号'); 
+            }
+
+            bindEvent();;//判断按钮的状态选择绑定是事件            
+        });
+
+        function bindEvent() {
+
+            var txt = $('#Update').html();
+            if (txt == '修改') {                
+                $('#Update').on('click', Change);//改变为可写状态
+                
+            } else if (txt == '保存') {                
+                $('#Update').on('click', UpdateById);//更新数据
+                
+            }
+        }
+        //更新页面更改后的数据
+        function Refresh() {
+            //var infor=1;
+            var url = '/Home/SignIn';
+           var UserID=@ViewBag.CurUserID,
+            UserPwd=@ViewBag.CurUserPwd,
+            Infor=1;
+            function infor(resp) {
+                if (resp!=null) {
+                    $('#txtStuID').html(resp.WorkID);  
+                    $('#txtName').html(resp.Name);
+                    $('#txtSex').html(resp.Gender);
+                    $('#txtSchName').html(resp.SchName);
+                    $('#txtEmail').html(resp.EMail);
+                } else {
+                    alert('更新数据失败！');
+                }
+            };
+            $.post(url, {uid:UserID,pwd:UserPwd,inf:Infor}, infor);
+
+        }
+
+        function Change() {//显示输入框
+            $('#Update').html('保存');
+            $('input:hidden').show();
+            $('#radSex').show();
+            $('span:visible').hide();
+            $('#txtUserID').show();
+            bindEvent();
+        }
+
+        function UpdateById() {//个人数据根据UserID更新
+
+            var url = '/Home/UpdateById';
+            var userObj = {
+                UserID: @ViewBag.CurUserID,
+                WorkID: $('#InStuID').val(),
+                Name: $('#InName').val(),
+                Gender: $("input[name='Sex']:checked").val(),
+                SchName: $('#InSchName').val(),
+                EMail: $('#InEmail').val(),
+            };
+
+            function Update(resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    Refresh();                                        
+                } else {
+                    alert('修改失败！');
+                }
+            };
+
+            $.post(url, userObj, Update);
+            //相应元素返回原来状态
+            $('input:visible').hide();
+            $('#Update').show();
+            $('#radSex').hide();
+            $('span:hidden').show();
+            $('#Update').html('修改');
+            bindEvent();//多次修改
+
+        }
+    </script>
+</body>
+</html>

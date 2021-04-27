@@ -1,0 +1,200 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>爱考试平台</title>
+    <meta charset="utf-8" />
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+
+    <style type="text/css">
+        div.layui-tab {
+            margin: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        ul.layui-tab-title {
+            height: 40px;
+        }
+
+        div.layui-tab-content {
+            flex: auto;
+        }
+
+        div.layui-tab div.layui-tab-item {
+            height: 100%;
+        }
+
+        li.layui-this {
+            background-color: aliceblue;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+        }
+        #new {
+            
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div id="head" class="layui-header" style="background-color :#2f90b9;">
+            <div class="layui-logo" style="color:black"><b style="color:aliceblue;">爱考试</b></div>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <img src="~/layui/images/face/0.gif" class="layui-nav-img">
+                        @ViewBag.Pro
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a class="menu-link" href="javascript:;" data-action="/Information/MyInformation" data-menuid="user-myinfor">个人信息</a></dd>
+                        <dd><a class="menu-link" href="javascript:;" data-action="/Security/SecuritySet" data-menuid="user-Security">安全设置</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/Home/Logout">注销</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+                <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                    <li class="layui-nav-item"><a href="">主页</a></li>
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a class="" href="javascript:;">班级管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a id="classList" class="menu-link" href="javascript:;" data-action="/Class/ClassList" data-menuid="class-list">班级列表</a>
+                            </dd>
+                            <dd>
+                                <a id="myclass" class="menu-link" href="javascript:;" data-action="/Class/MyClass" data-menuid="class-my">我的班级</a>
+                            </dd>
+                            <dd>
+                                <a id="AddClass" class="menu-link" href="javascript:;" data-action="/Class/AddClass" data-menuid="class-add">创建班级</a>
+                            </dd>
+                            <dd>
+                                <a id="JoinClass" class="menu-link" href="javascript:;" data-action="/Class/JoinClass" data-menuid="class-join">加入班级</a>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">试卷管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a id="TestList" class="menu-link" href="javascript:;" data-action="/TPaper/TestList" data-menuid="Ware-myexam">试卷列表</a>
+                            </dd>
+                            <dd>
+                                <a id="addTest" class="menu-link" href="javascript:;" data-action="/TPaper/AddTest" data-menuid="Ware-addexam">添加试卷</a>
+                            </dd>
+                            <dd>
+                                <a class="menu-link" id="MyTopic" href="javascript:;" data-action="/TPaper/TopicList" data-menuid="Ware-topiclist">题库列表</a>
+                            </dd>
+                            <dd>
+                                <a class="menu-link" id="AddTopic" href="javascript:;" data-action="/TPaper/AddTopic" data-menuid="Ware-addtopic">创建题库</a>
+                            </dd>
+                            @*<dd>
+                                <a class="menu-link" id="AddQues" href="javascript:;" data-action="/Warehouse/AddQuestion" data-menuid="Ware-exam">录入题目</a>
+                            </dd>*@
+                            <dd>
+                                <a id="doexam" class="menu-link" href="javascript:;" data-action="/Examination/ExamList" data-menuid="class-exam">考试</a>
+                            </dd>
+                            <dd>
+                                <a id="Score" class="menu-link" href="javascript:;" data-action="/Examination/ScoreList" data-menuid="TPaper-ScoreList">考试成绩</a>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">信息管理</a>
+                        <dl class="layui-nav-child">
+                            <dd>
+                                <a class="menu-link" href="javascript:;" data-action="/Information/MyInformation" data-menuid="prod-chuangji">个人信息</a>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a class="menu-link" href="javascript:;" data-action="/TPaper/Talk" data-menuid="user-talk">交流社区</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-body">       
+            <div class="layui-tab" lay-filter="tabContainer" lay-allowclose="true">
+                <ul class="layui-tab-title"></ul>
+                <div id="new" class="layui-tab-content"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/layui/layui.all.js"></script>
+
+    <script>
+
+        $(function () {
+
+            if (@ViewBag.CurUserPro==202) {//教师
+                //区分账号
+                $('#head').css("background-color","#33141e");
+                $('#JoinClass').hide();
+                $('#myclass').hide();
+                $('#doexam').hide();
+
+            }else if(@ViewBag.CurUserPro==101){//学生
+                $('#AddClass').hide();
+                $('#MyTopic').hide();
+                $('#AddQues').hide();
+                $('#classList').hide();        
+                $('#addTest').hide();
+                $('#AddTopic').hide();
+                $('#TestList').hide();
+            }
+        })
+
+        /*
+        layui.use 加载所需模块
+        第一个参数是依赖的模块名称，
+        第二个参数加载完成后的回调函数
+        */
+        layui.use(['element'], function () {
+            bindEvent();
+        });
+
+        function bindEvent() {
+            // 菜单事件绑定
+            $('a.menu-link').click(function (e) {
+                // 获取菜单选项配置的值，TODO后期可以考虑放入数据库中维护
+                var url = $(this).attr('data-action');
+                var tabName = $(this).text();
+                var tabid = $(this).attr('data-menuid');
+                var tabFilter = 'tabContainer';
+
+                //判断tab选项卡是否已存在
+                var tabExist = $(`ul.layui-tab-title>li[lay-id=${tabid}]`).length > 0;
+
+                if (!tabExist) {
+                    // 添加新的tab
+                    layui.element.tabAdd(tabFilter, {
+                        title: tabName,//tab名称
+                        content: `<iframe name="frmContent" src="${url}" frameborder="0"></iframe>`,//tab的内容
+                        id: tabid//tab的id，用于change和close
+                    });
+                }
+                //选中指定id的tab选项卡
+                layui.element.tabChange(tabFilter, tabid);
+            });
+        }
+    </script>
+</body>
+</html>

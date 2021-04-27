@@ -1,0 +1,456 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+    <script src="~/Scripts/base.js"></script>
+    <style>
+        #main {
+            width: 60%;
+            height: 100%;
+            margin-top: 50px;
+            margin-left: 50px;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+            position:absolute;
+        }
+        #right{
+            position: fixed;
+            margin-left:850px;
+            border:solid;
+            width:430px;
+            height:550px;
+            color: #C4A699;
+            display:none;
+        }
+        #bttom{
+            position: fixed;
+            margin-left:880px;
+            margin-top: 540px;
+            display:none;
+        }
+        #score{
+            position: fixed;
+            margin-left:950px;
+            height:59px;
+            display:none;
+        }
+        label{
+            color: #C4A699;
+        }
+        span {
+            color: #000000;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="Body">
+
+        <div id="main">
+            <div id="headTable" class="layui-collapse" lay-accordion="">
+                <div class="layui-colla-item">
+                    <script type="text/html" id="toolbarDemo">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchAdd">加入试卷</button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="barDemo">
+                        <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div id="right">
+            <div id="rightTable" class="layui-collapse" lay-accordion="">
+                <div class="layui-colla-item" >
+                    <h2 class="layui-colla-title"><b>预览试卷</b></h2>
+                    <div class="layui-colla-content layui-show">
+                        <table class="layui-hide" id="tt1" lay-filter="tt1"></table>
+                    </div>
+                    <script type="text/html" id="bar">
+                        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div id="score">
+            <br />
+            <label style="margin-left:50px;">客观题：<span id="Obj"></span></label>
+            <label>主观题：<span id="Sub"></span></label>
+            <label>试卷总分：<span id="Score"></span></label>
+        </div>
+
+        <div id="bttom">
+            <button id="btnAdd" class="layui-btn layui-btn-sm" style="display:inline;margin-left:100px;">确认</button>
+            <button id="btnDelete" class="layui-btn layui-btn-sm" style="display:inline;margin-left:50px;">取消</button>
+        </div>
+    </div>
+<script>
+    var globalTestId =getQueryString('id');// 从url获取key对应的value值
+    var isUpdate = Boolean(globalTestId);// 标识当前的操作业务，false为新增业务，true为更新业务
+
+        var list=new  Array();////实现题型动态出现
+        var TopicList=new Array();////实现题型动态出现
+        var listId=new Array();//实现手风琴动态出现(第一层的name)
+        var list2id=new Array();//实现手风琴动态出现
+        var QueList=new Array('单选题','多选题','判断题','问答题');//所有题型
+        var QueId=new Array('ChoiceID','MoreChoiceID','JudgeID','QueAnswerID');
+        var index=1000;//防止id重复
+        var _ObjNumber=0;//客观题分数
+        var _Score=0;//总分
+        var _SubNumber=0//主观题分数
+
+        $(function () {
+            BindEvent();
+            loadData();     
+        })
+
+        function IsUpdate() {
+            if (globalTestId>0) {
+                $('#right').show();
+                $('#bttom').show();
+                initTableAdvance();
+            }
+        }
+
+        function loadData() {
+            $.post('/TPaper/GetTopicList',{id: @ViewBag.CurUserID},
+                function (resp) {
+                    resp.forEach(function (t,i) {
+                        //实现手风琴动态出现
+                        listId[i]=t.TopicID;
+                        list2id[i]='#'+t.TopicID;
+                        insert2TableDiv(t,i);
+                        //实现题型动态出现
+                        TopicList[i]=new Array(i);
+                        list[i]=new Array(i);
+                        index=1000;
+                        
+                        for (var j = 0; j < QueList.length; j++) {
+                            //实现题型动态出现
+                            TopicList[i][j]=t.TopicID+index;
+                            list[i][j]="#"+TopicList[i][j];                              
+                            insert2Tablehtml(resp,i,j);
+                            index+=1000;
+                        }
+                    });
+                });
+        }
+
+        function insert2TableDiv(t,i) {
+            var html=`<div  class="layui-colla-item">
+                    <h2 class="layui-colla-title"><b style="margin-right:80px">题库名称：${t.Name}</b><a name="AddQue" href="#" style="margin-right:50px;display:inline" value="${t.TopicID}">添加题目</a><a name="Delete" href="#" style="margin-left:150px;display:inline" value="${t.TopicID}">删除题库</a></h2>
+                    <div class="layui-colla-content layui-show">
+                    <div id="${listId[i]}" class="layui-collapse" lay-accordion="">
+                    </div>
+                    </div>
+                  </div>`
+            $('#headTable').append(html);
+            $("a[name='AddQue']").on('click',AddQueById);
+            $("a[name='Delete']").on('click',DeleteTopicById);
+        }
+
+        function DeleteTopicById(e) { 
+            var TopicID=$(e.target).attr('value');
+            var url = '/TPaper/DeleteTopicById';
+            function Del(resp) {
+                if (resp.Status) {
+                    layui.layer.msg('题库删除成功，刷新页面即可生效！');
+                } else {
+                    layui.layer.msg('题库删除失败，请重新删除！');
+                }
+            };
+            $.post(url, { id:TopicID}, Del);           
+        }
+
+        function AddQueById(e) {
+            var TopicID=$(e.target).attr('value');
+            location.href = `/TPaper/AddQuestion?tid=${TopicID}`;
+        }
+
+        function insert2Tablehtml(t,i,j) {
+            var sechtml=`<div class="layui-colla-item">
+                          <h2 class="layui-colla-title"><b>类型：${QueList[j]}</b></h2>
+                          <div class="layui-colla-content">
+                          <table class="layui-hide" id="${TopicList[i][j]}" lay-filter="test"></table>
+			</div>
+		 </div>`;
+            $(list2id[i]).append(sechtml);
+        }
+
+        function BindEvent() {
+            $('#btnDelete').on('click',DeleteTestById);
+            $('#btnAdd').on('click',AddTest);
+        }
+
+        //手风琴
+        function into() {  
+            layui.use(['element', 'layer'], function(){
+                var element = layui.element;
+                var layer = layui.layer;
+                //监听折叠
+                element.on('collapse(test)', function(data){
+                    layer.msg('展开状态：'+ data.show);
+                });
+            });
+        }
+
+
+        layui.use(['jquery', 'table', 'form'], function () {
+            into();
+            initTable(); // 渲染右边表格
+            initTableToolbar(); // 渲染表头工具栏（批量删除、导出等等）
+            initTableInlineTool();// 表格行内编辑操作（编辑、删除、审核。。。）
+            initTableInlineTool2();//预览试卷删除题目
+            IsUpdate();
+        });
+
+        // 初始化表格
+        function initTable() {        
+            for (var i = 0; i < list.length; i++) {
+                for (var j = 0; j < TopicList[i].length; j++) {
+                    
+                    layui.table.render({
+                        elem: list[i][j]// 渲染表格的【lay-filter】
+                    , url: `/TPaper/GetQueByPage?topicid=${listId[i]}&queid=${TopicList[i][j]}` //请求数据的url
+                    , request: {// 请求附加参数，修改默认分页传参key的名称
+                        pageName: 'pageindex'
+                        , limitName: 'pagesize'
+                    }
+                    , method: 'post'
+                    , title: '题库列表'
+                    , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                    , cols: [[
+                    { type: 'checkbox', fixed: 'left' }
+                    , { field: QueId[j], title: '编号', width: 90, fixed: 'left', unresize: true, sort: true }
+                    , { field: 'Name', title: '题目', width: 140 }
+                    , { field: 'Content', title: '内容', width: 150 }
+                    , { field: 'Answer', title: '答案', width: 100 }                    
+                    , { field: 'Fraction', title: '分数', width: 60 }
+                    , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 120 }
+                    ]]
+                    , page: true// 开启分页
+                    , parseData: function (res) {// 对后端响应数据做进一步处理
+                        return {
+                            "code": 0// 返回成功有效code为0
+                            , "count": res.Total
+                            , "data": res.Rows
+                        };
+                    }
+                    });
+                }
+            }
+        }
+
+        //预览试卷
+        function initTableAdvance() {
+            layui.table.render({
+                elem: '#tt1'// 渲染表格的【lay-filter】
+                , url: `/Warehouse/GetExamById?tid=${globalTestId}` //请求数据的url
+                , request: {// 请求附加参数，修改默认分页传参key的名称
+                    pageName: 'pageindex'
+                    , limitName: 'pagesize'
+                }
+                , method: 'post'
+                , title: '试卷预览'
+                , cols: [[// 绑定表格 数据列 配置
+                  { type: 'checkbox', fixed: 'left' }
+                  , { field: 'TestID', title: '试卷编号', width:110}
+                  , { field: 'QuestionID', title: '题目编号' , width:110}
+                  , { fixed: 'right', title: '操作', toolbar: '#bar', width:110 }
+                ]]
+                , page: true// 开启分页
+                , parseData: function (res) {// 对后端响应数据做进一步处理
+                    return {
+                        "code": 0// 返回成功有效code为0
+                        , "count": res.Total
+                        , "data": res.Rows
+                    };
+                }
+            });
+        }
+
+    // 题库行内编辑事件
+        function initTableInlineTool() {
+        layui.table.on('tool(test)', function (obj) {
+            // 当前行数据，包括没有绑定表格显示的属性
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确定从题库中删除此题吗', function (index) {
+                    var url = '/TPaper/DeleteQueById';
+                    var tid=data.ChoiceID||data.MoreChoiceID||data.JudgeID||data.QueAnswerID;
+                    $.post(url,{id:tid}, function (resp) {
+                        var ro = resp;
+                        if (ro.Status) {
+                            obj.del();// 仅仅在表格内移除行数据，不会重新请求数据
+                            layer.close(index);
+                        } else {
+                            layer.msg('无法删除，请联系管理员！');
+                        }
+                    });
+                });
+            } else if (obj.event === 'edit') {
+                editTopic(data);
+            }
+        });
+    }
+
+    // 预览试卷行内编辑事件
+        function initTableInlineTool2() {
+        layui.table.on('tool(tt1)', function (obj) {
+            // 当前行数据，包括没有绑定表格显示的属性
+            var data = obj.data;
+                layer.confirm('确定从试卷中删除此题吗？', function (index) {
+                    var url = '/Warehouse/DeleteQueIDById';
+                    var tid=data.ExamID;
+
+                    $.post(url,{id:tid}, function (resp) {
+                        var ro = resp;
+                        if (ro.Status) {
+                            obj.del();// 仅仅在表格内移除行数据，不会重新请求数据
+                            layer.close(index);
+                        } else {
+                            layer.msg('无法删除，请联系管理员！');
+                        }
+                    });
+                });
+        });
+    }
+    // 表头工具栏
+        function initTableToolbar() {
+        layui.table.on('toolbar(test)', function (obj) {
+            // obj.config.id 即渲染表格的【lay-filter】，checkStatus获取选中行相关数据
+            var checkStatus = layui.table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'batchAdd':
+                    if (checkStatus.data.length == 0) {
+                        layui.layer.msg('请选中数据后加入试卷中！');
+                    } else {
+                        var prodName = checkStatus.data.map(function (t, i) {
+                            return t.Name;
+                        });
+                        var  Array = checkStatus.data.map(function (t, i) {
+                            tid=t.ChoiceID||t.MoreChoiceID||t.JudgeID||t.QueAnswerID;
+                            return tid;
+                        });
+
+                        var  score = checkStatus.data.map(function (t, i) {
+                            if (t.Fraction>=10) {
+                                _SubNumber+=t.Fraction;
+                            }else if (t.Fraction<10) 
+                            {
+                                _ObjNumber+=t.Fraction;
+                            }
+                            _Score=_ObjNumber+_SubNumber;
+                            return _Score;
+                        });
+
+                        layer.confirm(`确认将编号为${Array}的题目加入试卷?`, function (e) {
+                            AddByBatch(Array);
+                        });
+                    }
+                    break;
+            };
+        });
+    }
+
+        function AddByBatch(arr) {
+            if (isUpdate) {
+            var url = `/Warehouse/AddExam?tid=${globalTestId}`;
+            $.post(url, { ids: arr.join( )}, function (resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    $('#right').show();
+                    $('#bttom').show();
+                    $('#score').show();
+                    initTableAdvance(arr);
+                    //if (globalTestId>0) {
+                    //    _SubNumber=obj.SubNumber;
+                    //    _ObjNumber=obj._ObjNumber
+                    //    _Score=obj._Score;
+                    //}
+                    $('#Sub').html(_SubNumber);
+                    $('#Obj').html(_ObjNumber);
+                    $('#Score').html(_Score);
+                    layui.layer.msg('加入试卷成功！');
+                } else {
+                    layui.layer.msg('发生异常，无法加入试卷');
+                    console.error(resp.Message);
+                }
+            });
+        }else {
+            layui.layer.msg('尚未添加试卷，请添加试卷后再加入题目！！');
+            return;
+        }
+
+    }
+
+        function editTopic(resp) {
+        var tid=resp.ChoiceID||resp.MoreChoiceID||resp.JudgeID||resp.QueAnswerID;
+        location.href = `/TPaper/AddQuestion?id=${tid}`;
+        }
+
+        function DeleteTestById() {
+        var url = '/TPaper/DeleteTestById';
+        var TestID = globalTestId;
+        $.post(url, { id: TestID }, function (resp) {
+            var ro = resp;
+            if (ro.Status) {
+                $('#right').hide();
+                $('#bttom').hide();
+                $('#score').hide();
+            } else {
+                layer.msg('无法删除，请联系管理员！');
+            }
+        });
+        //删除关联表Exam中的数据
+        var url = '/Warehouse/DeleteExamById';
+        var TestID = globalTestId;
+        $.post(url, { id: TestID }, function (resp) {
+            if (resp.Status) {
+                layer.msg('试卷取消成功！');
+            } else {
+                layer.msg('无法删除，请联系管理员！');
+            }
+        });
+    }
+
+        function AddTest() {
+
+            var url = `/TPaper/AddExamTest?id=${globalTestId}`;
+            var Obj={
+                ObjNumber:_ObjNumber,
+                SubNumber:_SubNumber,
+                Score:_Score
+            };
+
+            function add(resp) { 
+                if (resp != null) {
+                    layui.layer.msg('创建试卷成功！');
+                    location.href = '/TPaper/TestList';
+                } else {
+                    layui.layer.msg('创建试卷失败！');
+                }
+            };
+
+            $.post(url,Obj,add);
+    }
+
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,357 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+
+    <style>
+        #main {
+            width: 45%;
+            height: 100%;
+            /*margin-top: 100px;*/
+            margin-left: 100px;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div id="head" style="height:120px;">
+        <fieldset class="layui-elem-field site-demo-button" style="margin-top:20px;margin-left:300px;width:450px;border:none">
+            <div>
+                <button id="btnSelect" type="button" class="layui-btn layui-btn-radius">单选题</button>
+                <button id="btnMSelect" type="button" class="layui-btn layui-btn-radius">多选题</button>
+                <button id="btnJudge" type="button" class="layui-btn layui-btn-radius">判断题</button>               
+                <button id="btnNarrative" type="button" class="layui-btn layui-btn-radius">问答题</button>
+                <button id="btn" type="button" class="layui-btn layui-btn-radius">填空题</button>
+            </div>
+        </fieldset>
+    </div>
+    <div id="main">
+        <div id="Narrative" style="display:none">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item" style="margin-bottom:50px;">
+                    <label class="layui-form-label">题目：</label>
+                    <div class="layui-input-block">
+                        <input id="NarName" type="text" name="title" autocomplete="off" placeholder="请输入问题" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">答案</label>
+                    <div class="layui-input-block">
+                        <textarea id="ContNarrative" placeholder="请输入内容" class="layui-textarea" name="desc"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-bottom:50px;margin-top:30px;">
+                    <label class="layui-form-label">分数：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="txtNarrative" lay-verify="required" placeholder="请输入该题分数" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="site-demo-button" id="layerDemo" style="margin-left:200px;">
+                    <button id="btnAddNarrative" type="submit" class="layui-btn" lay-submit="" lay-filter="demo" data-type="auto" data-method="offset">添加</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="Select">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item" style="margin-bottom:30px;">
+                    <label class="layui-form-label">题目：</label>
+                    <div class="layui-input-block">
+                        <input id="SName" type="text" name="title" autocomplete="off" placeholder="请输入问题" class="layui-input">
+                    </div>
+                </div>
+                <div  style="margin-left:20px;">
+                    <label for="A">答案：</label>
+                    <input class="form-check-input" type="radio" name="answer" id="A" value="" checked="checked">
+                    <label class="form-check-label" for="">A</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Stitle" style="margin-left:45px;width:410px;" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div style="margin-left:65px;">
+                    <input class="form-check-input" type="radio" name="answer" id="B" value="">
+                    <label class="form-check-label" for="">B</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Stitle" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div  style="margin-left:65px;">
+                    <input class="form-check-input" type="radio" name="answer" id="C" value="">
+                    <label class="form-check-label" for="">C</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Stitle" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div  style="margin-left:65px;">
+                    <input class="form-check-input" type="radio" name="answer" id="D" value="">
+                    <label class="form-check-label" for="">D</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Stitle" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-bottom:50px;margin-top:30px;">
+                    <label class="layui-form-label">分数：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="txtSelect" lay-verify="required" placeholder="请输入该题分数" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="site-demo-button" id="layerDemo" style="margin-left:200px;">
+                    <button id="btnAddSelect" type="submit" class="layui-btn" lay-submit="" lay-filter="demo" data-type="auto" data-method="offset">添加</button>
+                </div>
+            </form>
+
+        </div>
+
+        <div id="MoreSelect" style="display:none">
+
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item" style="margin-bottom:30px;">
+                    <label  class="layui-form-label">题目：</label>
+                    <div class="layui-input-block">
+                        <input id="MName" type="text" name="title" autocomplete="off" placeholder="请输入问题" class="layui-input">
+                    </div>
+                </div>
+                <div style="margin-left:20px;">
+                    <label for="">答案：</label>
+                    <input class="form-check-input" type="checkbox" name="Sex" id="a" value="">
+                    <label class="form-check-label" for="Student">A</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Mtitle" style="margin-left:45px;width:410px;" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div style="margin-left:65px;">
+                    <input class="form-check-input" type="checkbox" name="Sex" id="b" value="">
+                    <label class="form-check-label" for="Teacher">B</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Mtitle" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div style="margin-left:65px;">
+                    <input class="form-check-input" type="checkbox" name="Sex" id="c" value="">
+                    <label class="form-check-label" for="Teacher">C</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Mtitle" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div style="margin-left:65px;">
+                    <input class="form-check-input" type="checkbox" name="Sex" id="d" value="">
+                    <label class="form-check-label" for="Teacher">D</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="Mtitle" autocomplete="off" placeholder="请输入选项" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-bottom:50px;margin-top:30px;">
+                    <label class="layui-form-label">分数：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="txtMoreSelect" lay-verify="required" placeholder="请输入该题分数" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="site-demo-button"  style="margin-left:200px;">
+                    <button id="btnAddMoreSelect" type="submit" class="layui-btn" lay-submit="" lay-filter="demo" data-type="auto" data-method="offset">添加</button>
+                </div>
+            </form>
+
+        </div>
+
+        <div id="Judge" style="display:none">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item" style="margin-bottom:30px;">
+                    <label class="layui-form-label">题目：</label>
+                    <div class="layui-input-block">
+                        <input id="JName"  type="text" name="title" autocomplete="off" placeholder="请输入问题" class="layui-input">
+                    </div>
+                </div>
+                <div class="form-check form-check-inline" style="margin-left:20px;">
+                    <label for="Man">答案：</label>
+                    <input class="form-check-input" type="radio" name="Judge"  value="1" checked="checked">
+                    <label class="form-check-label" for="Student">√</label>
+                </div>
+                <div class="form-check form-check-inline" style="margin-left:65px;">
+                    <input class="form-check-input" type="radio" name="Judge"  value="2">
+                    <label class="form-check-label" for="Teacher">×</label>
+                </div>
+
+                <div class="layui-form-item" style="margin-bottom:50px;margin-top:30px;">
+                    <label class="layui-form-label">分数：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="txtJudge" lay-verify="required" placeholder="请输入该题分数" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="site-demo-button" style="margin-left:200px;">
+                    <button id="btnAddJudge" type="submit" class="layui-btn" lay-submit="" lay-filter="demo" data-type="auto" data-method="offset">添加</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        layui.use(['form', 'layedit', 'laydate', 'layer', 'upload', 'element'], function () {
+            bindEvent();
+        });
+
+        //$(function () {           
+            
+        //});
+
+        function bindEvent() {          
+            $('#btnSelect').on('click', Select);
+            $('#btnMSelect').on('click', MoreSelect);
+            $('#btnJudge').on('click', Judge);
+            $('#btnNarrative').on('click', Narrative);
+
+            $('#btnAddSelect').on('click', AddSelect);
+            $('#btnAddJudge').on('click', AddJudge);
+            $('#btnAddNarrative').on('click', AddNarrative);
+            $('#btnAddMoreSelect').on('click', AddMoreSelect);
+        }
+
+        function Narrative() {//问答题
+            $('#Select').hide();
+            $('#Narrative').show();
+            $('#MoreSelect').hide();
+            $('#Judge').hide();
+
+        }
+
+        function Select() {
+
+            $('#Select').show();
+            $('#Narrative').hide();
+            $('#MoreSelect').hide();
+            $('#Judge').hide();
+        }
+
+        function Judge() {
+            $('#Select').hide();
+            $('#Narrative').hide();
+            $('#MoreSelect').hide();
+            $('#Judge').show();
+        }
+
+        function MoreSelect() {//多选题
+            $('#Select').hide();
+            $('#Narrative').hide();
+            $('#MoreSelect').show();
+            $('#Judge').hide();
+        }
+         
+        
+
+        function AddSelect() {//添加题目进入数据库
+            debugger;
+            var url = '/TPaper/AddSelect';
+            //传入控制器转为字符串
+            var arr = $("[name='Stitle']").map(function () { return this.value }).get();
+            var list = arr.join('●')
+            console.log($('input:checked ~ div.layui-input-block input').val());
+            debugger;
+            var Obj={
+                Name: $('#SName').val(),
+                Answer: $('input:checked ~ div.layui-input-block input').val(),               
+                Content: list,
+                Fraction: $('#txtSelect').val(),
+            };
+
+        function add(resp) {
+            var obj = resp;
+            if (obj.Status) {
+                alert('添加成功');
+            } else {
+                alert('添加失败');
+            }
+        };
+
+            $.post(url,Obj,add);
+        }
+
+        function AddJudge() {
+
+            var url = '/TPaper/AddJudge';
+            var Obj = {
+                Name: $('#JName').val(),
+                Answer: $("input[name='Judge']:checked").val(),
+                Fraction: $('#txtJudge').val(),
+            };
+
+            function add(resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    alert('添加成功');
+                } else {
+                    alert('添加失败');
+                }
+            };
+
+            $.post(url, Obj, add);
+        }
+
+        function AddNarrative() {
+
+            var url = '/TPaper/AddNarrative';
+            debugger;
+            var Obj = {
+                Name: $('#NarName').val(),
+                Answer: $('#ContNarrative').val(),
+                Fraction: $('#txtNarrative').val(),
+            };
+
+            function add(resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    alert('添加问答题成功');
+                } else {
+                    alert('添加问答题失败');
+                }
+            };
+
+            $.post(url, Obj, add);
+        }
+
+        function AddMoreSelect() {
+
+            var url = '/TPaper/AddMoreSelect';
+            debugger;
+            //传入控制器转为字符串  多选题答案同理
+            var arr = $("[name='Mtitle']").map(function () { return this.value }).get();
+            var list = arr.join('●')
+            var Obj = {
+                Name: $('#MName').val(),
+                Answer: '答案',//$("input[name='answer']:checked~div:input").val(),
+                Content: list,
+                Fraction: $('#txtMoreSelect').val(),
+            };
+
+            function add(resp) {
+                var obj = resp;
+                if (obj.Status) {
+                    alert('添加成功');
+                } else {
+                    alert('添加失败');
+                }
+            };
+
+            $.post(url, Obj, add);
+        }
+
+
+
+    </script>
+</body>
+</html>

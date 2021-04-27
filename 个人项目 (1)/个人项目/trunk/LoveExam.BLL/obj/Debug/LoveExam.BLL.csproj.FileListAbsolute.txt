@@ -1,0 +1,16 @@
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.BLL.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.BLL.pdb
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.DAL.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.Model.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\EntityFramework.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.DAL.pdb
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.DAL.dll.config
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.Model.pdb
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\LoveExam.Model.dll.config
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\EntityFramework.xml
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\bin\Debug\zh-Hans\EntityFramework.resources.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\obj\Debug\LoveExam.BLL.csprojAssemblyReference.cache
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\obj\Debug\LoveExam.BLL.csproj.CoreCompileInputs.cache
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\obj\Debug\LoveExam.BLL.csproj.CopyComplete
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\obj\Debug\LoveExam.BLL.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.BLL\obj\Debug\LoveExam.BLL.pdb

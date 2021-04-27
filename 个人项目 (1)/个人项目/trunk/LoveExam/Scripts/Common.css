@@ -1,0 +1,51 @@
+﻿body {
+
+}
+
+.common-text-right  {text-align:right}
+.common-text-center {text-align:center }
+.common-text-left   {text-align:left}
+.common-display-none{display:none;}
+
+/*********高度设置***********/
+.common-height-all  {height:100%;}
+.common-height1-50  {height:50px;}
+.common-height2-50  {height:100px;}
+.common-height3-50  {height:150px;}
+
+/*********设置宽度**************/
+.common-width-all   {width:100% !important;}
+.common-width1-50   {width:50px !important;}
+.common-width2-50   {width:100px !important;}
+.common-width3-50   {width:150px !important;}
+.common-width4-50   {width: 200px !important;}
+.common-width5-50   {width:250px !important; }
+
+
+
+/*********背景颜色*****************/
+.common-background-color-yello {background-color:#dfe11b}
+.common-background-color-blue  {background-color:#0828e8}
+.common-background-color-black {background-color:#000000}
+.common-background-color-white {background-color:#ffffff}
+
+/*********div间隔******************/
+.common-margin-left1-10  {margin-left:10px;}
+.common-margin-left3-10   {margin-left:30px;}
+.common-margin-rigth1-10 {margin-right:10px;}
+.common-margin-top1-10   {margin-top:10px;}
+
+
+/**********字体的高度****************/
+.common-height1-20       {line-height:20px;}
+.common-line-height1-50  {line-height:50px;}
+.common-line-height3-50  {line-height:150px;}
+/***********鼠标样式*****************/
+.common-cursor {cursor: pointer}
+/***********字体设置*******************/
+.common-font-size-12 {font-size:12px;}
+.common-font-size-14 {font-size:14px;}
+.common-font-family  {font-family:'Microsoft Himalaya'}
+/***********设置字体颜色**********************/
+.common-color-white  {color:#ffffff !important}
+.common-color-red    {color:red !important}

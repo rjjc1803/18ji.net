@@ -1,0 +1,14 @@
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\LoveExam.Model.dll.config
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\LoveExam.Model.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\LoveExam.Model.pdb
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\EntityFramework.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\EntityFramework.SqlServer.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\EntityFramework.xml
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\EntityFramework.SqlServer.xml
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\zh-Hans\EntityFramework.resources.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\bin\Debug\zh-Hans\EntityFramework.SqlServer.resources.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\obj\Debug\LoveExam.Model.csprojAssemblyReference.cache
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\obj\Debug\LoveExam.Model.csproj.CoreCompileInputs.cache
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\obj\Debug\LoveExam.Model.csproj.CopyComplete
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\obj\Debug\LoveExam.Model.dll
+D:\C#个人项目\个人项目\trunk\LoveExam.Model\obj\Debug\LoveExam.Model.pdb

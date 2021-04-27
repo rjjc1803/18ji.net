@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "注册";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<form>
+    <div class="form-group">
+        <label for="txtName">请填写姓名</label>
+        <input class="form-control" type="text" id="txtName" placeholder="请填写真实姓名" />
+    </div>
+    <div class="form-group">
+        <label for="txtUserPwd">请填写密码</label>
+        <input class="form-control" type="password" id="txtUserPwd" placeholder="密码" />
+    </div>
+    <div class="form-group">
+        <label for="txtUserPwdRepeat">请填写确认密码</label>
+        <input class="form-control" type="password" id="txtUserPwdRepeat" placeholder="确认密码" />
+    </div>
+    <div class="form-group">
+        <label for="txtEmail">请填写邮箱</label>
+        <input class="form-control" type="text" id="txtEmail" placeholder="请填写可用邮箱" />
+    </div>
+    <div class="form-group">
+        <label for="txtAddress">请填写所在学校名</label>
+        <input class="form-control" type="text" id="txtAddress" placeholder="请填写所在学校（单位）" />
+    </div>
+    
+    <div class="form-check form-check-inline" style="margin-left:20px; zoom:120%;">
+        <label for="Man">性别：</label>
+        <input class="form-check-input" type="radio" name="Sex" id="Man" value="男" checked="checked">
+        <label class="form-check-label" for="Student">男</label>
+    </div>
+    <div class="form-check form-check-inline" style="margin-left:95px;zoom:120%;">
+        <input class="form-check-input" type="radio" name="Sex" id="WoMan" value="女">
+        <label class="form-check-label" for="Teacher">女</label>
+    </div>
+    
+    <div class="form-check form-check-inline" style="margin-left:20px; zoom:120%;">
+        <label for="Student">职业：</label>
+        <input class="form-check-input" type="radio" name="profession" id="Student" value="101" checked="checked">
+        <label class="form-check-label" for="Student">学生</label>
+    </div>
+    <div class="form-check form-check-inline" style="margin-left:80px;zoom:120%;">
+        <input class="form-check-input" type="radio" name="profession" id="Teacher" value="202">
+        <label class="form-check-label" for="Teacher">教师</label>
+    </div>
+    <div class="form-group" id="IsStu">
+        <label for="txtStuID">学号</label>
+        <input type="text" class="form-control" id="txtStuID" placeholder="请填写学号">
+    </div>
+
+    <div class="form-group">
+        <span id="tipMsg"></span>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary btn-block" id="btnSave">注册</button>
+    </div>
+</form>
+
+@section Scripts{
+    <script>
+        $(function () {
+            IsStu();
+            bindEvent();
+            
+        })
+    
+
+        function bindEvent() {
+            $('#btnSave').on('click', save);
+            $("input[name='profession']").on('click', IsStu);
+        }
+
+        function IsStu() {
+            userPro = $("input[name='profession']:checked").val();
+            if (userPro == 202) {
+                $('#IsStu').hide();
+            } else if (userPro == 101) {
+                $('#IsStu').show();
+            }
+        }
+
+        function save(e) {
+            // 阻止表单的默认提交事件
+            e.preventDefault();
+            var userObj = {
+                Name: $('#txtName').val(),
+                PassWord: $('#txtUserPwd').val(),
+                EMail: $('#txtEmail').val(),
+                SchName: $('#txtAddress').val(),
+                RepeatPwd: $('#txtUserPwdRepeat').val(),
+                Gender: $("input[name='Sex']:checked").val(),
+                Profession: $("input[name='profession']:checked").val(),
+                WorkID: $('#txtStuID').val(),                
+            };
+
+            if (userObj.Name == '' || userObj.PassWord == '' || userObj.RepeatPwd == '') {
+                $('#tipMsg').text('姓名和密码不可为空！');
+                return;
+            }
+            if (userObj.PassWord != userObj.RepeatPwd) {
+                $('#tipMsg').text('两次密码输入不一致，请重新输入！');
+                $('#txtUserPwdRepeat').focus();
+                return;
+            }
+
+            function regis(resp) {
+                var obj =resp;
+                if (obj.Status) {
+                    //layer.confirm('确定交卷？', function (index) {
+                        
+                    //});
+                    location.href = '/Home/Login';
+                } else {
+                    $('#tipMsg').text(obj.Message);
+                }
+            }
+            $.post('/Home/AddUser', userObj, regis);
+        }
+    </script>
+}

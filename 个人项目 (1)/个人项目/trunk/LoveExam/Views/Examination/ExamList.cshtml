@@ -1,0 +1,152 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/layui/layui.js"></script>
+    <style>
+        #main {
+            width: 60%;
+            height: 100%;
+            margin-top: 40px;
+            margin-left: 150px;
+            flex-wrap: nowrap; /*容器内项目换行方式*/
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="headTable" class="layui-collapse" lay-accordion="">
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title"><b>试卷列表</b></h2>
+                <div class="layui-colla-content layui-show">
+                    <table class="layui-hide" id="test" lay-filter="test"></table>
+                    <script type="text/html" id="barDemo">
+                        <a id="Rele" class="layui-btn layui-btn-warm layui-btn-xs" lay-event="do">考试</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        var IdList=new Array();
+
+        $(function () {
+            loadData();     
+        })
+        layui.use(['jquery', 'table', 'form'], function () {
+
+            into();
+            initTable(); // 渲染表格
+            initTableInlineTool();// 表格行内编辑操作（考试）
+        });
+
+        function into() {
+            layui.use(['element', 'layer'], function () {
+                var element = layui.element;
+                var layer = layui.layer;
+                //监听折叠
+                element.on('collapse(test)', function (data) {
+                    layer.msg('展开状态：' + data.show);
+                });
+            });
+        }
+
+        function loadData() {
+            var url = '/Examination/GetTestIdList';
+            var TestID = @ViewBag.CurUserID;
+            $.post(url, { id: TestID }, function (resp) {
+                if (resp!=null) {    
+                    resp.forEach(function (t,i) {
+                        IdList[i]=t.TestID;                        
+                    });
+                }else {
+                    layer.msg('获取试卷失败！');
+                }
+            });
+        }
+        // 初始化表格
+        function initTable() {
+             layui.table.render({
+                 elem: '#test'// 渲染表格的【lay-filter】
+                 , url: `/Examination/GetTestList?ids=${IdList}` //请求数据的url
+                 , request: {// 请求附加参数，修改默认分页传参key的名称
+                     pageName: 'pageindex'
+                     , limitName: 'pagesize'
+                 }
+                 , method: 'post'
+                 , title: '试卷列表'
+                 , cols: [[
+                     { type: 'checkbox', fixed: 'left' }
+                     , { field: 'TestID', title: '编号', width: 80, sort: true }
+                     , { field: 'Name', title: '名称', width: 120 }
+                     , { field: 'ObjNumber', title: '客观题总分', width: 100 }
+                     , { field: 'SubNumber', title: '主观题总分', width: 100 }
+                     , { field: 'Score', title: '总分', width: 100 }
+                     , { field: 'TestStatus', title: '状态', width: 100 }
+                     , { fixed: 'right', title: '操作', toolbar: '#barDemo', width: 90 }
+                 ]]
+                 , page: true// 开启分页
+                 , parseData: function (res) {// 对后端响应数据做进一步处理
+                     return {
+                         "code": 0// 返回成功有效code为0
+                         , "count": res.Total
+                         , "data": res.Rows
+                     };
+                 }
+             });
+        }
+
+        // 行内编辑事件
+        function initTableInlineTool() {
+            layui.table.on('tool(test)', function (obj) {
+                // 当前行数据，包括没有绑定表格显示的属性
+                var data = obj.data;
+                if (obj.event === 'do') {
+                    layer.confirm('确认开始考试？', function (index) {
+                        var TestID=data.TestID;
+                        OpenNew(TestID);
+                        
+                    });
+                } 
+            });
+        }
+
+        //打开新的页面进行考试
+        function OpenNew(TestID) {
+            window.open(`/Examination/DoExam?id=${TestID}`);
+        }
+
+        ////给关联表StuTest添加记录
+        //function AddStuTest(arr, tid) {
+        //    var url = '/Warehouse/AddStuTest';
+        //    var TestID = tid,
+        //        ClassID = 20015;
+        //    function add(resp) {
+        //        var obj = resp;
+        //        if (obj.Status) {
+        //            layui.layer.msg('发布试卷成功！');
+        //        } else {
+        //            layui.layer.msg('发布试卷失败！');
+        //        }
+        //    };
+        //    $.post(url, { tid: TestID, cid: ClassID, uid: arr.join() }, add);
+        //}
+
+
+    </script>
+</body>
+</html>
+
+
